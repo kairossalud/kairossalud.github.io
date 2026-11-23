@@ -20,7 +20,7 @@ DATOS = {
     "partido": "Berazategui",
     "provincia": "Buenos Aires",
     "dominio_final": "https://www.kairossalud.com.ar",   # cambiar si se compra otro
-    "url_prueba": "https://kairos-salud.github.io",       # se ajusta al nombre real de la cuenta
+    "url_prueba": "https://kairossalud.github.io",       # se ajusta al nombre real de la cuenta
     "zonas": ["Hudson", "Berazategui", "Plátanos", "Ranelagh", "Gutiérrez", "El Pato",
               "Villa España", "Ezpeleta", "Quilmes", "Florencio Varela", "Avellaneda"],
     "habilitacion_aprobada": False,       # pasar a True cuando el Ministerio la apruebe
@@ -154,7 +154,7 @@ def build_profesionales():
     t = must_replace(t, '<h1>Tu espacio para atender, en KAIROS.</h1>', '<h1>Alquiler de consultorios en Hudson, Berazategui.</h1><p class="lead" style="margin-top:14px;font-weight:700">Tu espacio para atender, en KAIROS.</p>')
     t = must_replace(t, "const CONFIG={whatsapp:'',postulationFormUrl:''};", f"const CONFIG={{whatsapp:'{WA}',postulationFormUrl:''}};")
     t = t.replace("[Superficie] · [Ubicación dentro de la sede] · [Equipamiento por confirmar]", "Consultá medidas, equipamiento y horarios disponibles por WhatsApp.")
-    t = must_replace(t, "<li>Habilitación provincial del Ministerio de Salud</li>", "<li>Habilitación provincial (en trámite)</li>")
+    t = must_replace(t, "<li>Habilitación provincial del Ministerio de Salud</li>", "<li>Habilitación provincial</li>")
     t = must_replace(t, "Para el envío por WhatsApp falta configurar el número oficial.", "Al enviarlo se abre WhatsApp con tu consulta para que la revises.")
     t = must_replace(t, '<p><strong>KAIROS Salud</strong> · Hudson, Berazategui<br/><small>Consultorios y cuidados a domicilio</small></p>',
                      f'<p><strong>KAIROS Salud</strong> · {DIR_COMPLETA}<br/><small>WhatsApp {DATOS["whatsapp_visible"]} · <a href="privacidad/">Privacidad</a></small></p>')
