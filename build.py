@@ -23,7 +23,8 @@ DATOS = {
     "url_prueba": "https://kairossalud.github.io",       # se ajusta al nombre real de la cuenta
     "zonas": ["Hudson", "Berazategui", "Plátanos", "Ranelagh", "Gutiérrez", "El Pato",
               "Villa España", "Ezpeleta", "Quilmes", "Florencio Varela", "Avellaneda"],
-    "habilitacion_aprobada": False,       # pasar a True cuando el Ministerio la apruebe
+    "habilitacion_aprobada": False,
+    "ga4_id": "G-DR2GCEQM6F",             # Google Analytics 4 (vacío = sin medición)       # pasar a True cuando el Ministerio la apruebe
 }
 # =====================================================
 
@@ -62,7 +63,26 @@ def head_extra(path, title, desc, depth, schema):
 <meta property="og:image" content="{BASE}/assets/brand/og-kairos.jpg"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>
-<noscript><style>.reveal{{opacity:1!important;transform:none!important}}</style></noscript>'''
+<noscript><style>.reveal{{opacity:1!important;transform:none!important}}</style></noscript>
+{ga4_snippet()}'''
+
+
+def ga4_snippet():
+    """GA4 sin datos personales: solo se envían nombres de evento y la página.
+    Nunca se mandan valores de formularios (nombre, teléfono, situación, etc.)."""
+    gid = DATOS.get("ga4_id")
+    if not gid:
+        return ""
+    return (f'<script async src="https://www.googletagmanager.com/gtag/js?id={gid}"></script>'
+            "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}"
+            f"gtag('js',new Date());gtag('config','{gid}',{{anonymize_ip:true,allow_google_signals:false,allow_ad_personalization_signals:false}});"
+            "document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';"
+            "if(h.indexOf('wa.me')>-1){gtag('event','whatsapp_click',{ubicacion:location.pathname,boton:(a.className||'link').split(' ')[0]})}"
+            "else if(h.indexOf('#turnos')>-1){gtag('event','turno_click',{ubicacion:location.pathname})}"
+            "else if(h.indexOf('maps')>-1){gtag('event','como_llegar_click',{ubicacion:location.pathname})}},true);"
+            "document.addEventListener('submit',function(e){var f=e.target;if(!f||!f.id)return;"
+            "var n={careForm:'consulta_domicilio',rentForm:'consulta_alquiler',bookingForm:'solicitud_turno'}[f.id];"
+            "if(n)gtag('event','formulario_enviado',{formulario:n,ubicacion:location.pathname})},true);</script>")
 
 
 def org_schema():
@@ -299,6 +319,7 @@ def build_domicilio():
 <h2>Qué datos usamos</h2><p>Cuando nos escribís por WhatsApp o completás un formulario, usamos tu nombre, número de contacto, localidad y el servicio consultado únicamente para responderte y coordinar la atención.</p>
 <h2 style="margin-top:28px">Qué no pedimos por la web</h2><p>No pedimos ni guardamos diagnósticos, estudios ni historia clínica a través de este sitio. Esa información se trata luego, de forma reservada, con el equipo que te atienda.</p>
 <h2 style="margin-top:28px">Formularios de la web</h2><p>Los formularios no envían datos a un servidor: arman un mensaje que vos revisás y enviás desde tu WhatsApp. La agenda de turnos de la web está en fase de prueba y guarda la información solo en tu navegador.</p>
+<h2 style="margin-top:28px">Estadísticas de visitas</h2><p>Usamos Google Analytics para saber cuántas personas visitan la web y qué secciones usan. No enviamos a Google nombres, teléfonos ni información de salud: solo datos agregados de navegación, como la página visitada o el tipo de dispositivo.</p>
 <h2 style="margin-top:28px">Tus derechos</h2><p>Podés pedir acceso, rectificación o supresión de tus datos escribiéndonos por WhatsApp, conforme a la Ley 25.326 de Protección de Datos Personales.</p>
 <p class="smallnote" style="margin-top:22px">Responsable: KAIROS Salud · {DIR_COMPLETA}. Última actualización: {HOY}.</p></div></div></section>'''
     pages["privacidad/index.html"] = page(
