@@ -174,8 +174,30 @@ def build_profesionales():
     t = must_replace(t, '<h1>Tu espacio para atender, en KAIROS.</h1>', '<h1>Alquiler de consultorios en Hudson, Berazategui.</h1><p class="lead" style="margin-top:14px;font-weight:700">Tu espacio para atender, en KAIROS.</p>')
     t = must_replace(t, "const CONFIG={whatsapp:'',postulationFormUrl:''};", f"const CONFIG={{whatsapp:'{WA}',postulationFormUrl:''}};")
     t = t.replace("[Superficie] · [Ubicación dentro de la sede] · [Equipamiento por confirmar]", "Consultá medidas, equipamiento y horarios disponibles por WhatsApp.")
+    t = t.replace('<a href="#modalidades">Modalidades</a>', '<a href="#modalidades">Modalidades</a><a href="#disponibilidad">Agenda</a>')
     t = must_replace(t, "<li>Habilitación provincial del Ministerio de Salud</li>", "<li>Habilitación provincial</li>")
-    t = must_replace(t, "Para el envío por WhatsApp falta configurar el número oficial.", "Al enviarlo se abre WhatsApp con tu consulta para que la revises.")
+    # Agenda de alquiler de consultorios (reemplaza el formulario de texto)
+    import re as _re
+    agenda = open(f"{SRC}/disponibilidad.json", encoding="utf-8").read()
+    rooms = json.loads(agenda)["consultorios"]
+    room_btns = "".join(f'<button type="button" class="ag-room" data-room="{r}" aria-pressed="false">{r}</button>' for r in rooms)
+    room_btns += '<button type="button" class="ag-room" data-room="Cualquier consultorio" aria-pressed="false">Cualquiera disponible</button>'
+    section = f'''<section id="disponibilidad"><div class="wrap"><div class="section-title"><span class="eyebrow">Agenda de consultorios</span><h2>Elegí consultorio, día y horario.</h2><p>Mirá la disponibilidad de cada espacio y enviános tu solicitud por WhatsApp. Te confirmamos el alquiler y las condiciones de forma personalizada.</p></div>
+<div class="ag-layout"><div class="ag-panel">
+<div class="ag-step"><span>1</span><div><h3>Consultorio</h3><div class="ag-rooms">{room_btns}</div></div></div>
+<div class="ag-step"><span>2</span><div style="min-width:0"><h3>Día</h3><div class="ag-toolbar"><button type="button" class="ag-nav" id="agPrev" aria-label="Mes anterior">‹</button><strong id="agMonth" aria-live="polite"></strong><button type="button" class="ag-nav" id="agNext" aria-label="Mes siguiente">›</button></div><div class="ag-grid" id="agDays" role="group" aria-label="Calendario de disponibilidad"></div><div class="ag-key"><span><i class="ag-dot ok"></i>Con horarios libres</span><span><i class="ag-dot full"></i>Completo</span><span><i class="ag-dot off"></i>Sin atención</span></div><p class="notice" id="agHint"></p></div></div>
+</div><div class="ag-panel ag-detail"><div class="ag-head"><span class="eyebrow" style="margin:0">Tu elección</span><h3 id="agDayTitle">Elegí un día</h3><p class="notice" id="agSummary" style="margin:0"></p></div>
+<div class="ag-slots" id="agSlots" aria-live="polite"></div>
+<form id="rentForm" class="ag-form" hidden><h3>Tus datos</h3><div class="fields"><label class="field full">Modalidad<select id="rentMode" required=""><option value="">Elegí una opción</option><option>Por hora (solo este día)</option><option>Módulo fijo semanal (mismo día y horario todas las semanas)</option><option>Mensual</option><option>Quiero asesoramiento</option></select></label><label class="field full">Nombre y apellido<input autocomplete="name" id="rentName" placeholder="Tu nombre completo" required=""/></label><label class="field">Especialidad<input id="rentSpec" placeholder="Ej. Psicología" required=""/></label><label class="field">WhatsApp<input autocomplete="tel" id="rentPhone" inputmode="tel" placeholder="Código de área + número" required="" type="tel"/></label></div><button class="btn" type="submit">Enviar solicitud por WhatsApp ↗</button><p class="notice">La solicitud no reserva automáticamente: te confirmamos disponibilidad y valores por WhatsApp. No incluyas información de pacientes.</p><p class="status hidden" id="rentStatus" role="status"></p></form>
+</div></div></div></section>'''
+    t, n = _re.subn(r'<section id="disponibilidad">.*?</section>', lambda m: section, t, count=1, flags=_re.S)
+    assert n == 1
+    t = _re.sub(r"\$\('rentForm'\)\.addEventListener\('submit'.*?\n", "", t, count=1)
+    t = _re.sub(r"document\.querySelectorAll\('\.consultorio-select'\).*?\n", "", t, count=1)
+    assert "rentRoom" not in t
+    css = open(f"{SRC}/agenda-consultorios.css", encoding="utf-8").read()
+    t = must_replace(t, "</style></head>", css + "</style></head>")
+    t = must_replace(t, "</body></html>", f'<script>window.KAIROS_AGENDA={json.dumps(json.loads(agenda), ensure_ascii=False)};window.KAIROS_WA="{WA}";</script><script src="assets/agenda-consultorios.js" defer></script></body></html>')
     t = must_replace(t, '<p><strong>KAIROS Salud</strong> · Hudson, Berazategui<br/><small>Consultorios y cuidados a domicilio</small></p>',
                      f'<p><strong>KAIROS Salud</strong> · {DIR_COMPLETA}<br/><small>WhatsApp {DATOS["whatsapp_visible"]} · <a href="privacidad/">Privacidad</a></small></p>')
     return t

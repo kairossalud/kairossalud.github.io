@@ -1,0 +1,28 @@
+{
+  "_ayuda": "Disponibilidad para alquiler de consultorios. Horarios en bloques de 1 hora (hora de inicio). Para marcar un horario como alquilado, agregalo en ocupado_semanal (todas las semanas) u ocupado_fechas (un día puntual).",
+  "desde": "2027-01-04",
+  "semanas_visibles": 10,
+  "horario": {
+    "lun": ["08:00", "19:00"],
+    "mar": ["08:00", "19:00"],
+    "mie": ["08:00", "19:00"],
+    "jue": ["08:00", "19:00"],
+    "vie": ["08:00", "19:00"],
+    "sab": null,
+    "dom": null
+  },
+  "consultorios": ["Consultorio A", "Consultorio B", "Consultorio C", "Consultorio D"],
+  "ocupado_semanal": {
+    "Consultorio A": {},
+    "Consultorio B": {},
+    "Consultorio C": {},
+    "Consultorio D": {}
+  },
+  "ocupado_fechas": {
+    "Consultorio A": {},
+    "Consultorio B": {},
+    "Consultorio C": {},
+    "Consultorio D": {}
+  },
+  "cerrado": []
+}
