@@ -8,7 +8,7 @@
     "mie": ["08:00", "19:00"],
     "jue": ["08:00", "19:00"],
     "vie": ["08:00", "19:00"],
-    "sab": null,
+    "sab": ["08:00", "14:00"],
     "dom": null
   },
   "consultorios": ["Consultorio A", "Consultorio B", "Consultorio C", "Consultorio D"],
